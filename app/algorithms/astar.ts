@@ -7,7 +7,7 @@ export class AStar {
   private visitedCeells!: string[];
   private cellsDistances!: Record<string, number>;
   private prevCell: Record<string, string> = {};
-  private forDeployment: any = { key: "string", value: "number" }
+  private forDeployment: any = { key: "string", value: "number" };
 
   algorithm(startCell: string, targetCell: string, walls: string[]): string[] {
     // initializing different variable that will hold cells information
@@ -70,7 +70,7 @@ export class AStar {
         // checking if current neighbor is not undefined
         if (this.unvisitedCells.getValue(currNeighbor) !== undefined) {
           // if current neighor is in unvisited cells and new 'neighTotalVal' is smaller, it updates necessary data
-          if (this.unvisitedCells.getValue(currNeighbor) > neighTotalVal) {
+          if (this.unvisitedCells.getValue(currNeighbor) || 0 > neighTotalVal) {
             this.unvisitedCells.updateValue(currNeighbor, neighTotalVal);
             this.cellsDistances[currNeighbor] = neighDist;
             this.prevCell[currNeighbor] = currCell.key;
