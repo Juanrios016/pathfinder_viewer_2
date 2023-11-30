@@ -17,7 +17,7 @@ export class DFS {
 
     // algorithm logic
     while (this.tobeVisited.length > 0 && !this.found) {
-      const currCell = this.tobeVisited.shift();
+      const currCell = this.tobeVisited.shift() || "";
       const cell = document.querySelector(`[cell-pos="${currCell}"]`);
 
       if (currCell === undefined || walls.includes(currCell) || !cell) {

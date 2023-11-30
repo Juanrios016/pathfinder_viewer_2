@@ -21,7 +21,7 @@ export class AStar {
     while (!this.unvisitedCells.isEmpty()) {
       console.log(this.unvisitedCells);
 
-      const currCell = this.unvisitedCells.dequeue();
+      const currCell = this.unvisitedCells.dequeue() || "";
       this.visitedCeells.push(currCell.key);
       this.cellsDistances[currCell.key] = currCell.value;
       const [targetX, targetY] = targetCell.split(",").map(Number);

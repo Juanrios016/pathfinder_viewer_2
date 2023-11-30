@@ -20,7 +20,7 @@ export class DijkstrasAlgorithm {
 
     // algorithm logic
     while (!this.unvisetedCells.isEmpty()) {
-      const currCell = this.unvisetedCells.dequeue();
+      const currCell = this.unvisetedCells.dequeue() || "";
       if (
         this.visitedCells.includes(currCell.key) ||
         walls.includes(currCell.key)
