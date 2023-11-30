@@ -8,6 +8,7 @@ export class DijkstrasAlgorithm {
   private previousCell: Record<string, string> = {};
   private minDistance: any;
   private visitedCells!: string[];
+  private forDeployment: any = { key: "string", value: "number" };
 
   algorithm(startCell: any, targetCell: any, walls: any): any {
     // initializing different variable that will hold cells information
@@ -20,7 +21,7 @@ export class DijkstrasAlgorithm {
 
     // algorithm logic
     while (!this.unvisetedCells.isEmpty()) {
-      const currCell = this.unvisetedCells.dequeue() || "";
+      const currCell = this.unvisetedCells.dequeue() || this.forDeployment;
       if (
         this.visitedCells.includes(currCell.key) ||
         walls.includes(currCell.key)

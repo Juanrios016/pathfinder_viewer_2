@@ -7,6 +7,7 @@ export class AStar {
   private visitedCeells!: string[];
   private cellsDistances!: Record<string, number>;
   private prevCell: Record<string, string> = {};
+  private forDeployment: any = { key: "string", value: "number" }
 
   algorithm(startCell: string, targetCell: string, walls: string[]): string[] {
     // initializing different variable that will hold cells information
@@ -21,7 +22,7 @@ export class AStar {
     while (!this.unvisitedCells.isEmpty()) {
       console.log(this.unvisitedCells);
 
-      const currCell = this.unvisitedCells.dequeue() || "";
+      const currCell = this.unvisitedCells.dequeue() || this.forDeployment;
       this.visitedCeells.push(currCell.key);
       this.cellsDistances[currCell.key] = currCell.value;
       const [targetX, targetY] = targetCell.split(",").map(Number);
