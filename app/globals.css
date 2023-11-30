@@ -2,26 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.individual-cell {
+  @apply border border-blue-400 h-[24px] w-[24px];
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.viewer {
+  @apply grid grid-rows-6;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.start-cell {
+  @apply bg-red-500;
+}
+
+.wall-cell {
+  @apply bg-black;
+}
+
+.end-cell {
+  @apply bg-green-400;
+}
+
+.path-cell {
+  @apply bg-yellow-300;
+}
+
+.visited-cell {
+  @apply bg-blue-300 border border-white;
+}
+.btn {
+  @apply hover:bg-opacity-70 rounded-[6px] text-black text-base font-semibold border border-black bg-slate-300;
+}
+.cell-info {
+  @apply flex items-center justify-center;
+}
+.active {
+  border: 2px dashed blue; /* Example border style for active drop zone */
 }

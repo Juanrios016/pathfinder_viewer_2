@@ -1,0 +1,14 @@
+{
+  "dijkstras": {
+    "info": "Dijkstra's algorithm is widely employed for solving single-source shortest path problems with non-negative edge weights in graphs, aiming to determine the shortest distance between two vertices.",
+    "source": "https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/?ref=lbp#dijkstras-algorithm"
+  },
+  "dfs": {
+    "info": "Depth first Search or Depth first traversal is a recursive algorithm for searching all the vertices of a graph or tree data structure. Traversal means visiting all the nodes of a graph.",
+    "source": "https://www.programiz.com/dsa/graph-dfs"
+  },
+  "astar": {
+    "info": "The A* Search Algorithm is motivated by the need to efficiently approximate the shortest path in real-life situations, such as maps or games with obstacles. It is a smart path-finding technique widely used due to its effectiveness in navigating through obstacles.",
+    "source": "https://www.geeksforgeeks.org/a-search-algorithm/"
+  }
+}
