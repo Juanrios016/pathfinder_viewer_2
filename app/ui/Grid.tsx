@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import arrow from "../../public/arrow.png";
 
 export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -16,6 +17,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [printingAlgoPath, setPrintingAlgoPath] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [buttonPressed, setButtonPressed] = useState<any>(false);
+  const [arrowDir, setArrowDir] = useState<string[][]>([[], [], [], []]);
 
   const handleMouseDown = () => {
     // initializes function when mouse is pressed down
@@ -109,6 +111,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     } else {
       setFinalShortestPath(shortestPath);
       clearInterval(intervalId); // Clear the interval when printing is stopped
+      // console.log(arrowDir);
     }
     return () => {
       clearInterval(intervalId); // Clean up the interval when the component unmounts
@@ -120,10 +123,11 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     if (buttonPressed && startCell !== "" && targetCell !== "") {
       const currAlgo = selectedAlgo;
       const algoVisitedCells = currAlgo.algorithm(startCell, targetCell, walls);
-      const algoShortestSolu = currAlgo.getPath(targetCell);
+      const algoShortestSolu = currAlgo.getPath(targetCell, startCell);
 
       setFinalVisitedCells(algoVisitedCells);
       setFinalShortestPath(algoShortestSolu);
+      setArrowDir(currAlgo.c);
     } else if (
       (buttonPressed && startCell === "") ||
       (buttonPressed && targetCell === "")
@@ -179,7 +183,8 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     const visitedCells = currAlgo.algorithm(startCell, targetCell, walls);
     setVisitedCells(visitedCells);
     startAlgorithmSol();
-    setShortestPath(currAlgo.getPath(targetCell));
+    setShortestPath(currAlgo.getPath(targetCell, startCell));
+    setArrowDir(currAlgo.c);
 
     if (startCell !== "" && targetCell !== "") {
       // enables the start button if 'startCell' and 'targetCell' are not empty
@@ -208,12 +213,28 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
             : finalVisitedCells.includes(String(j) + "," + String(k))
             ? "visited-cell"
             : ""
-        }`}
+        } flex items-center justify-center`}
         onMouseEnter={() => handleMouseEnter(i)}
         onClick={() => handleOnClick(i)}
         cell-pos={String(j) + "," + String(k)}
         cell-key={i}
-      ></div>
+      >
+        <img
+          src="/arrow.png" // Replace with the actual path to your image
+          alt="Cell Image"
+          className={`w-[20px] h-auto select-none ${
+            arrowDir[0].includes(String(j) + "," + String(k))
+              ? "block "
+              : arrowDir[1].includes(String(j) + "," + String(k))
+              ? "block transform rotate-90"
+              : arrowDir[2].includes(String(j) + "," + String(k))
+              ? "block"
+              : arrowDir[3].includes(String(j) + "," + String(k))
+              ? "block"
+              : "hidden"
+          }`}
+        />{" "}
+      </div>
     );
     k++;
     if (i % 60 === 0) {

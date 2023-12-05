@@ -1,33 +1,27 @@
 import { PriorityQueue } from "../helper classes/priorityqueue";
 
 export class AStar {
-  // class for A star algorithm
-
   private unvisitedCells!: PriorityQueue<string, number>;
-  private visitedCeells!: string[];
+  private visitedCells!: string[];
   private cellsDistances!: Record<string, number>;
   private prevCell: Record<string, string> = {};
-  private forDeployment: any = { key: "string", value: "number" };
+  private arrowDirections: Record<string, number> = {};
+  private c: string[][] = [[], [], [], []];
+  private cellNeighbors: Record<string, Record<string, number>> = {};
 
   algorithm(startCell: string, targetCell: string, walls: string[]): string[] {
-    // initializing different variable that will hold cells information
-    this.unvisitedCells = new PriorityQueue();
-    this.visitedCeells = [];
+    this.unvisitedCells = new PriorityQueue<string, number>();
+    this.visitedCells = [];
     this.cellsDistances = {};
 
-    // pushing start cell
     this.unvisitedCells.enqueue(startCell, 0);
 
-    // algorithm logic
     while (!this.unvisitedCells.isEmpty()) {
-      console.log(this.unvisitedCells);
-
-      const currCell = this.unvisitedCells.dequeue() || this.forDeployment;
-      this.visitedCeells.push(currCell.key);
+      const currCell = this.unvisitedCells.dequeue() || { key: "", value: 0 };
+      this.visitedCells.push(currCell.key);
       this.cellsDistances[currCell.key] = currCell.value;
       const [targetX, targetY] = targetCell.split(",").map(Number);
 
-      // checking if walls include current cell
       if (walls.includes(currCell.key)) {
         continue;
       }
@@ -41,68 +35,88 @@ export class AStar {
         `${x - 1},${y}`, // Up
       ];
 
+      const directions: Record<number, string> = {
+        0: "left",
+        1: "down",
+        2: "right",
+        3: "up",
+      };
+
+      let direction = 0;
+
+      this.cellNeighbors[currCell.key] = {};
+
       for (const currNeighbor of neighbors) {
-        // checks if current neighbor has been visited or equals null if x and y coordinates go outside the the panel
         if (
-          this.visitedCeells.includes(currNeighbor) ||
+          this.visitedCells.includes(currNeighbor) ||
           document.querySelector(`[cell-pos="${currNeighbor}"]`) === null
         ) {
           continue;
         }
 
-        // checks if current cell is target cell
         if (currNeighbor === targetCell) {
           this.prevCell[currNeighbor] = currCell.key;
-          return this.visitedCeells;
+          this.arrowDirections[currNeighbor] = direction;
+
+          return this.visitedCells;
         }
 
-        const [neighX, neighY] = currNeighbor.split(",").map(Number); // current neighbor x and y coordinates
-        const neighDist = this.cellsDistances[currCell.key] + 1; // distance from start cell to current cell
+        const [neighX, neighY] = currNeighbor.split(",").map(Number);
+        const neighDist = this.cellsDistances[currCell.key];
         const neighHeuristic = this.calcuHeuristic(
-          // calculating heuristic value
           neighX,
           targetX,
           neighY,
           targetY
         );
-        const neighTotalVal = neighHeuristic; // + neighDist; // total value combining heuristic val and distance vale
+        const neighTotalVal = neighHeuristic + neighDist;
 
-        // checking if current neighbor is not undefined
-        if (this.unvisitedCells.getValue(currNeighbor) !== undefined) {
-          // if current neighor is in unvisited cells and new 'neighTotalVal' is smaller, it updates necessary data
-          if (this.unvisitedCells.getValue(currNeighbor) || 0 > neighTotalVal) {
-            this.unvisitedCells.updateValue(currNeighbor, neighTotalVal);
-            this.cellsDistances[currNeighbor] = neighDist;
-            this.prevCell[currNeighbor] = currCell.key;
-          }
-          continue; // skips remaining functions
+        if (
+          this.unvisitedCells.getValue(currNeighbor) !== undefined &&
+          (this.unvisitedCells.getValue(currNeighbor) || 0) > neighTotalVal
+        ) {
+          this.unvisitedCells.updateValue(currNeighbor, neighTotalVal);
+          this.cellsDistances[currNeighbor] = neighDist;
+          this.prevCell[currNeighbor] = currCell.key;
+          this.arrowDirections[currNeighbor] = direction;
+          this.cellNeighbors[currCell.key][currNeighbor] = neighTotalVal;
+        } else if (this.unvisitedCells.getValue(currNeighbor) === undefined) {
+          this.unvisitedCells.enqueue(currNeighbor, neighTotalVal);
+          this.cellsDistances[currNeighbor] = neighDist;
+          this.prevCell[currNeighbor] = currCell.key;
+          this.arrowDirections[currNeighbor] = direction;
+          this.cellNeighbors[currCell.key][currNeighbor] = neighTotalVal;
         }
-
-        this.unvisitedCells.enqueue(currNeighbor, neighTotalVal);
-        this.cellsDistances[currNeighbor] = neighDist;
-        this.prevCell[currNeighbor] = currCell.key;
+        direction += 1;
       }
     }
 
-    return this.visitedCeells;
+    return this.visitedCells;
   }
 
   calcuHeuristic(x1: number, x2: number, y1: number, y2: number): number {
-    // calculates heuristic value base on the following operation
     const result = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     return result;
   }
 
   getPath(targetCell: string): string[] {
-    // returns path from startcell to target cell
-
     let currCell = this.prevCell[targetCell];
     const previous: string[] = [targetCell];
+    const arrowDir: string[][] = [["a"], ["b"], ["c"], ["d"]];
 
     while (currCell) {
       previous.unshift(currCell);
       currCell = this.prevCell[currCell];
+
+      if (
+        currCell !== undefined &&
+        this.arrowDirections[currCell] !== undefined
+      ) {
+        arrowDir[this.arrowDirections[currCell]].push(currCell);
+      }
     }
+
+    this.c = arrowDir;
 
     this.prevCell = {};
     return previous;
