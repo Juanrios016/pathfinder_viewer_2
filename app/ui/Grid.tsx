@@ -14,10 +14,12 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [shortestPath, setShortestPath] = useState<string[]>([]);
   const [finalShortestPath, setFinalShortestPath] = useState<string[]>([]);
 
+  const [arrowDir, setArrowDir] = useState<string[][]>([[], [], [], []]);
+  const [finalArrowDir, setFinalArrowDir] = useState<string[][]>([[], [], [], []]);
+
   const [printingAlgoPath, setPrintingAlgoPath] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [buttonPressed, setButtonPressed] = useState<any>(false);
-  const [arrowDir, setArrowDir] = useState<string[][]>([[], [], [], []]);
   const [showArrows, setShowArrows] = useState<boolean>(false);
 
   const handleMouseDown = () => {
@@ -116,6 +118,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
       }, 0.002);
     } else {
       setFinalShortestPath(shortestPath);
+      setFinalArrowDir(arrowDir);
       clearInterval(intervalId); // Clear the interval when printing is stopped
     }
     return () => {
@@ -126,19 +129,19 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   useEffect(() => {
     // starts when 'walls,' 'startCell,' or 'targetCell' changes
     if (buttonPressed && startCell !== "" && targetCell !== "") {
-      setArrowDir([[], [], [], []]);
       const currAlgo = selectedAlgo;
       const algoVisitedCells = currAlgo.algorithm(startCell, targetCell, walls);
       const algoShortestSolu = currAlgo.getPath(targetCell);
 
       setFinalVisitedCells(algoVisitedCells);
       setFinalShortestPath(algoShortestSolu);
-      setArrowDir(currAlgo.arrowDirections);
+      setFinalArrowDir(currAlgo.arrowDirections);
     } else if (
       (buttonPressed && startCell === "") ||
       (buttonPressed && targetCell === "")
     ) {
       resetViewer();
+      setFinalArrowDir(arrowDir);
     }
   }, [walls, startCell, targetCell]);
 
@@ -153,17 +156,19 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     setWalls([]);
     setStartCell("");
     setTargetCell("");
+    setArrowDir([[], [], [], []]);
   };
 
   const resetViewer = () => {
     // resets all necessary variables for the grid
     setVisitedCells([]);
     setShortestPath([]);
+    setArrowDir([[], [], [], []]);
     setPrintingAlgoPath(false);
     setCurrentIndex(0);
     setFinalShortestPath([]);
     setFinalVisitedCells([]);
-    setArrowDir([[], [], [], []]);
+    setFinalArrowDir([[], [], [], []]);
   };
 
   const resetButton = () => {
@@ -184,6 +189,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     setFinalVisitedCells([]);
     setShortestPath([]);
     setFinalShortestPath([]);
+    setFinalArrowDir([[], [], [], []]);
     setArrowDir([[], [], [], []]);
 
     // initializing algorithm
@@ -231,13 +237,16 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
           src="/arrow.png" // Replace with the actual path to your image
           alt="Cell Image"
           className={`w-[20px] h-auto select-none ${
-            arrowDir[0].includes(String(j) + "," + String(k)) && showArrows
+            finalArrowDir[0].includes(String(j) + "," + String(k)) && showArrows
               ? "block transform  -rotate-180"
-              : arrowDir[1].includes(String(j) + "," + String(k)) && showArrows
+              : finalArrowDir[1].includes(String(j) + "," + String(k)) &&
+                showArrows
               ? "block transform rotate-90 "
-              : arrowDir[2].includes(String(j) + "," + String(k)) && showArrows
+              : finalArrowDir[2].includes(String(j) + "," + String(k)) &&
+                showArrows
               ? "block"
-              : arrowDir[3].includes(String(j) + "," + String(k)) && showArrows
+              : finalArrowDir[3].includes(String(j) + "," + String(k)) &&
+                showArrows
               ? "block transform -rotate-90"
               : "hidden"
           }`}
