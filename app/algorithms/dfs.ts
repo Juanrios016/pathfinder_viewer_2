@@ -2,12 +2,14 @@ export class DFS {
   // class for depth first search algorithm
 
   private visitedCells!: string[];
-  private previousCells: Record<string, string> = {};
+  private prevCell: Record<string, string> = {};
   private found!: boolean;
   private tobeVisited!: string[];
+  arrowDirections!: string[][];
 
   algorithm(startCell: string, target: string, walls: string[]): string[] {
     // initializing different variable that will hold cells information
+    this.arrowDirections = [[], [], [], []];
     this.visitedCells = [];
     this.found = false;
     this.tobeVisited = [];
@@ -42,7 +44,7 @@ export class DFS {
             !this.visitedCells.includes(neighbor) //&& !this.tobeVisited.includes(neighbor)
           ) {
             this.tobeVisited.unshift(neighbor);
-            this.previousCells[neighbor] = currCell;
+            this.prevCell[neighbor] = currCell;
           }
         }
 
@@ -57,16 +59,45 @@ export class DFS {
   }
 
   getPath(targetCell: string): string[] {
-    // returns path from startcell to target cell
-    let currCell = this.previousCells[targetCell];
-    const path: string[] = [targetCell];
+    // gets shortest path starting from the 'targetCell'
+    let currCell = targetCell;
+    const previous: string[] = [];
 
     while (currCell) {
-      path.push(currCell);
-      currCell = this.previousCells[currCell];
+      previous.unshift(currCell);
+      currCell = this.prevCell[currCell];
+
+      if (currCell !== undefined) {
+        this.arrowDirections[this.getArrowDir(currCell, previous[0])].push(
+          currCell
+        );
+      }
     }
 
-    this.previousCells = {};
-    return path;
+    this.prevCell = {};
+    return previous;
+  }
+
+  getArrowDir(prevCell: any, currCell: any) {
+    // assignes arow direction based 'prevCell' and 'currCell' coordinates to see where 'prevcell' is located at based on the 'currCell'
+    const [currX, currY] = currCell.split(",").map(Number);
+    const [prevX, prevY] = prevCell.split(",").map(Number);
+    const calcX = currX - prevX;
+    const calcY = currY - prevY;
+    // 0: "left",
+    // 1: "down",
+    // 2: "right",
+    // 3: "up",
+
+    if (calcX === 0 && calcY === 1) {
+      return 2;
+    } else if (calcX === 0 && calcY === -1) {
+      return 0;
+    } else if (calcX === 1 && calcY === 0) {
+      return 1;
+    } else if (calcX === -1 && calcY === 0) {
+      return 3;
+    }
+    return 5;
   }
 }

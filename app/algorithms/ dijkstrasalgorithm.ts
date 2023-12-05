@@ -5,16 +5,16 @@ export class DijkstrasAlgorithm {
   unvisitedAnimation: any = {};
 
   private unvisetedCells!: PriorityQueue<string, number>;
-  private previousCell: Record<string, string> = {};
-  private minDistance: any;
+  private prevCell: Record<string, string> = {};
   private visitedCells!: string[];
   private forDeployment: any = { key: "string", value: "number" };
+  arrowDirections!: string[][];
 
   algorithm(startCell: any, targetCell: any, walls: any): any {
     // initializing different variable that will hold cells information
     this.unvisetedCells = new PriorityQueue<string, number>();
-    this.minDistance = Infinity;
     this.visitedCells = [];
+    this.arrowDirections = [[], [], [], []];
 
     // pushing start cell
     this.unvisetedCells.enqueue(startCell, 0);
@@ -48,7 +48,7 @@ export class DijkstrasAlgorithm {
           continue;
         }
         this.unvisetedCells.enqueue(currNeighbor, currCell.value + 1);
-        this.previousCell[currNeighbor] = currCell.key;
+        this.prevCell[currNeighbor] = currCell.key;
       }
 
       if (!this.visitedCells.includes(currCell.key)) {
@@ -57,25 +57,51 @@ export class DijkstrasAlgorithm {
       }
       //check if current cell is the target cell
       if (currCell.key === targetCell) {
-        this.minDistance = currCell.value;
         return this.visitedCells;
       }
     }
     return this.visitedCells;
   }
 
-  getPath(targetCell: string): any {
-    // returns path from startcell to target cell
-
-    let currCell = this.previousCell[targetCell];
-    const previous = [targetCell];
+  getPath(targetCell: string): string[] {
+    // gets shortest path starting from the 'targetCell'
+    let currCell = targetCell;
+    const previous: string[] = [];
 
     while (currCell) {
       previous.unshift(currCell);
-      currCell = this.previousCell[currCell];
-    }
+      currCell = this.prevCell[currCell];
 
-    this.previousCell = {};
+      if (currCell !== undefined) {
+        this.arrowDirections[this.getArrowDir(currCell, previous[0])].push(
+          currCell
+        );
+      }
+    }
+    this.prevCell = {};
     return previous;
+  }
+
+  getArrowDir(prevCell: any, currCell: any) {
+    // assignes arow direction based 'prevCell' and 'currCell' coordinates to see where 'prevcell' is located at based on the 'currCell'
+    const [currX, currY] = currCell.split(",").map(Number);
+    const [prevX, prevY] = prevCell.split(",").map(Number);
+    const calcX = currX - prevX;
+    const calcY = currY - prevY;
+    // 0: "left",
+    // 1: "down",
+    // 2: "right",
+    // 3: "up",
+
+    if (calcX === 0 && calcY === 1) {
+      return 2;
+    } else if (calcX === 0 && calcY === -1) {
+      return 0;
+    } else if (calcX === 1 && calcY === 0) {
+      return 1;
+    } else if (calcX === -1 && calcY === 0) {
+      return 3;
+    }
+    return 5;
   }
 }

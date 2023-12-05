@@ -18,6 +18,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [buttonPressed, setButtonPressed] = useState<any>(false);
   const [arrowDir, setArrowDir] = useState<string[][]>([[], [], [], []]);
+  const [showArrows, setShowArrows] = useState<boolean>(false);
 
   const handleMouseDown = () => {
     // initializes function when mouse is pressed down
@@ -75,6 +76,11 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     }
   };
 
+  const handleCheckboxChange = () => {
+    // handles checkbox to show shrtest path directions
+    setShowArrows(!showArrows);
+  };
+
   const generateMaze = () => {
     // generates a random maze on the grid
     setWalls([]);
@@ -111,7 +117,6 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     } else {
       setFinalShortestPath(shortestPath);
       clearInterval(intervalId); // Clear the interval when printing is stopped
-      // console.log(arrowDir);
     }
     return () => {
       clearInterval(intervalId); // Clean up the interval when the component unmounts
@@ -121,13 +126,14 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   useEffect(() => {
     // starts when 'walls,' 'startCell,' or 'targetCell' changes
     if (buttonPressed && startCell !== "" && targetCell !== "") {
+      setArrowDir([[], [], [], []]);
       const currAlgo = selectedAlgo;
       const algoVisitedCells = currAlgo.algorithm(startCell, targetCell, walls);
-      const algoShortestSolu = currAlgo.getPath(targetCell, startCell);
+      const algoShortestSolu = currAlgo.getPath(targetCell);
 
       setFinalVisitedCells(algoVisitedCells);
       setFinalShortestPath(algoShortestSolu);
-      setArrowDir(currAlgo.c);
+      setArrowDir(currAlgo.arrowDirections);
     } else if (
       (buttonPressed && startCell === "") ||
       (buttonPressed && targetCell === "")
@@ -157,6 +163,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     setCurrentIndex(0);
     setFinalShortestPath([]);
     setFinalVisitedCells([]);
+    setArrowDir([[], [], [], []]);
   };
 
   const resetButton = () => {
@@ -177,14 +184,15 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     setFinalVisitedCells([]);
     setShortestPath([]);
     setFinalShortestPath([]);
+    setArrowDir([[], [], [], []]);
 
     // initializing algorithm
     const currAlgo = selectedAlgo;
     const visitedCells = currAlgo.algorithm(startCell, targetCell, walls);
     setVisitedCells(visitedCells);
     startAlgorithmSol();
-    setShortestPath(currAlgo.getPath(targetCell, startCell));
-    setArrowDir(currAlgo.c);
+    setShortestPath(currAlgo.getPath(targetCell));
+    setArrowDir(currAlgo.arrowDirections);
 
     if (startCell !== "" && targetCell !== "") {
       // enables the start button if 'startCell' and 'targetCell' are not empty
@@ -223,14 +231,14 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
           src="/arrow.png" // Replace with the actual path to your image
           alt="Cell Image"
           className={`w-[20px] h-auto select-none ${
-            arrowDir[0].includes(String(j) + "," + String(k))
-              ? "block "
-              : arrowDir[1].includes(String(j) + "," + String(k))
-              ? "block transform rotate-90"
-              : arrowDir[2].includes(String(j) + "," + String(k))
+            arrowDir[0].includes(String(j) + "," + String(k)) && showArrows
+              ? "block transform  -rotate-180"
+              : arrowDir[1].includes(String(j) + "," + String(k)) && showArrows
+              ? "block transform rotate-90 "
+              : arrowDir[2].includes(String(j) + "," + String(k)) && showArrows
               ? "block"
-              : arrowDir[3].includes(String(j) + "," + String(k))
-              ? "block"
+              : arrowDir[3].includes(String(j) + "," + String(k)) && showArrows
+              ? "block transform -rotate-90"
               : "hidden"
           }`}
         />{" "}
@@ -265,6 +273,17 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
         <button onClick={generateMaze} className="btn px-5 m-3">
           Generate Maze
         </button>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={showArrows}
+              onChange={handleCheckboxChange}
+              className=" mr-1"
+            />
+            Show Path directions
+          </label>
+        </div>
       </div>
       <div className="h-[120px] flex items-center justify-center ">
         <p

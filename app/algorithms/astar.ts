@@ -5,22 +5,23 @@ export class AStar {
   private visitedCells!: string[];
   private cellsDistances!: Record<string, number>;
   private prevCell: Record<string, string> = {};
-  private arrowDirections: Record<string, number> = {};
-  private c: string[][] = [[], [], [], []];
-  private cellNeighbors: Record<string, Record<string, number>> = {};
+  arrowDirections!: string[][];
 
   algorithm(startCell: string, targetCell: string, walls: string[]): string[] {
+    // main algorithm logic
     this.unvisitedCells = new PriorityQueue<string, number>();
     this.visitedCells = [];
     this.cellsDistances = {};
+    this.arrowDirections = [[], [], [], []];
 
     this.unvisitedCells.enqueue(startCell, 0);
+    this.cellsDistances[startCell] = 0;
+
+    const [targetX, targetY] = targetCell.split(",").map(Number);
 
     while (!this.unvisitedCells.isEmpty()) {
       const currCell = this.unvisitedCells.dequeue() || { key: "", value: 0 };
       this.visitedCells.push(currCell.key);
-      this.cellsDistances[currCell.key] = currCell.value;
-      const [targetX, targetY] = targetCell.split(",").map(Number);
 
       if (walls.includes(currCell.key)) {
         continue;
@@ -35,90 +36,96 @@ export class AStar {
         `${x - 1},${y}`, // Up
       ];
 
-      const directions: Record<number, string> = {
-        0: "left",
-        1: "down",
-        2: "right",
-        3: "up",
-      };
-
-      let direction = 0;
-
-      this.cellNeighbors[currCell.key] = {};
-
       for (const currNeighbor of neighbors) {
         if (
           this.visitedCells.includes(currNeighbor) ||
           document.querySelector(`[cell-pos="${currNeighbor}"]`) === null
         ) {
+          // checks if 'currNeighbor' has not been visited or is not null
           continue;
         }
 
         if (currNeighbor === targetCell) {
+          // checks if current neighbor is the target cell
           this.prevCell[currNeighbor] = currCell.key;
-          this.arrowDirections[currNeighbor] = direction;
-
           return this.visitedCells;
         }
 
         const [neighX, neighY] = currNeighbor.split(",").map(Number);
-        const neighDist = this.cellsDistances[currCell.key];
+        const neighDist = this.cellsDistances[currCell.key] + 1;
         const neighHeuristic = this.calcuHeuristic(
           neighX,
           targetX,
           neighY,
           targetY
         );
+
         const neighTotalVal = neighHeuristic + neighDist;
 
         if (
           this.unvisitedCells.getValue(currNeighbor) !== undefined &&
           (this.unvisitedCells.getValue(currNeighbor) || 0) > neighTotalVal
         ) {
+          // updates 'currNeihgbor' value if a
           this.unvisitedCells.updateValue(currNeighbor, neighTotalVal);
           this.cellsDistances[currNeighbor] = neighDist;
           this.prevCell[currNeighbor] = currCell.key;
-          this.arrowDirections[currNeighbor] = direction;
-          this.cellNeighbors[currCell.key][currNeighbor] = neighTotalVal;
         } else if (this.unvisitedCells.getValue(currNeighbor) === undefined) {
           this.unvisitedCells.enqueue(currNeighbor, neighTotalVal);
           this.cellsDistances[currNeighbor] = neighDist;
           this.prevCell[currNeighbor] = currCell.key;
-          this.arrowDirections[currNeighbor] = direction;
-          this.cellNeighbors[currCell.key][currNeighbor] = neighTotalVal;
         }
-        direction += 1;
       }
     }
-
     return this.visitedCells;
   }
 
   calcuHeuristic(x1: number, x2: number, y1: number, y2: number): number {
+    // calculates heuristic value based on euclidean dstance
     const result = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     return result;
   }
 
   getPath(targetCell: string): string[] {
-    let currCell = this.prevCell[targetCell];
-    const previous: string[] = [targetCell];
-    const arrowDir: string[][] = [["a"], ["b"], ["c"], ["d"]];
+    // gets shortest path starting from the 'targetCell'
+    let currCell = targetCell;
+    const previous: string[] = [];
 
     while (currCell) {
       previous.unshift(currCell);
       currCell = this.prevCell[currCell];
 
-      if (
-        currCell !== undefined &&
-        this.arrowDirections[currCell] !== undefined
-      ) {
-        arrowDir[this.arrowDirections[currCell]].push(currCell);
+      if (currCell !== undefined) {
+        this.arrowDirections[this.getArrowDir(currCell, previous[0])].push(
+          currCell
+        );
       }
     }
 
-    this.c = arrowDir;
-
     this.prevCell = {};
     return previous;
+  }
+
+  getArrowDir(prevCell: any, currCell: any) {
+    // assignes arow direction based 'prevCell' and 'currCell' coordinates to see where 'prevcell' is located at based on the 'currCell'
+    const [currX, currY] = currCell.split(",").map(Number);
+    const [prevX, prevY] = prevCell.split(",").map(Number);
+    const calcX = currX - prevX;
+    const calcY = currY - prevY;
+    // 0: "left",
+    // 1: "down",
+    // 2: "right",
+    // 3: "up",
+
+    if (calcX === 0 && calcY === 1) {
+      return 2;
+    } else if (calcX === 0 && calcY === -1) {
+      return 0;
+    } else if (calcX === 1 && calcY === 0) {
+      return 1;
+    } else if (calcX === -1 && calcY === 0) {
+      return 3;
+    }
+    return 5;
   }
 }
