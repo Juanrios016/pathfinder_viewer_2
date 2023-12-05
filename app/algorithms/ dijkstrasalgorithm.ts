@@ -7,7 +7,6 @@ export class DijkstrasAlgorithm {
   private unvisetedCells!: PriorityQueue<string, number>;
   private prevCell: Record<string, string> = {};
   private visitedCells!: string[];
-  private forDeployment: any = { key: "string", value: "number" };
   arrowDirections!: string[][];
 
   algorithm(startCell: any, targetCell: any, walls: any): any {
@@ -21,7 +20,7 @@ export class DijkstrasAlgorithm {
 
     // algorithm logic
     while (!this.unvisetedCells.isEmpty()) {
-      const currCell = this.unvisetedCells.dequeue() || this.forDeployment;
+      const currCell = this.unvisetedCells.dequeue() || { key: "", value: 0 }; // the dictionary/map vas added for handling deployment issues
       if (
         this.visitedCells.includes(currCell.key) ||
         walls.includes(currCell.key)
