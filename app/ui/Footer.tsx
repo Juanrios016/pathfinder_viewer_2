@@ -8,7 +8,10 @@ export default function Footer() {
       </div>
       <p className="self-center text-white">
         &copy; 2023
-        <Link href={"juan-rios-website.vercel.app"} className="underline">
+        <Link
+          href={"https://juan-rios-website-jriosdel.vercel.app/"}
+          className="underline"
+        >
           Juan Rios
         </Link>
       </p>
