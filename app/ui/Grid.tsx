@@ -322,7 +322,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
 
       <div className=" md:min-h-[120px] flex items-center justify-center ">
         <div
-          className={`hidden xl:${
+          className={`hidden ${
             JSON.parse(algoInfo).info ? "hidden" : "block"
           }`}
         >
