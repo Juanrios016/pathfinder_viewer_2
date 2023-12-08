@@ -298,21 +298,24 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
 
   return (
     <div>
-      <div className="min-h-[60px] flex items-center justify-center py-3">
-        <button
-          onClick={startAnimation}
-          className={`btn px-5 m-3 ${!changedBoo ? "opacity-50" : ""}`}
-          disabled={!changedBoo}
-        >
-          Start
-        </button>
-        <button onClick={resetButton} className="btn px-5 m-3">
-          Reset
-        </button>
-        <button onClick={generateMaze} className="btn px-5 m-3">
-          Generate Maze
-        </button>
-        <div>
+      <div className="min-h-[60px] items-center justify-center py-3 grid-rows-2 grid-flow-col sm:flex">
+        <div className="flex items-center justify-center ">
+          <button
+            onClick={startAnimation}
+            className={`btn px-5 m-3 ${!changedBoo ? "opacity-50" : ""}`}
+            disabled={!changedBoo}
+          >
+            Start
+          </button>
+          <button onClick={resetButton} className="btn px-5 m-3">
+            Reset
+          </button>
+          <button onClick={generateMaze} className="btn px-5 m-3">
+            Generate Maze
+          </button>
+        </div>
+
+        <div className="col-span-3 flex justify-center items-center">
           <label>
             <input
               type="checkbox"
