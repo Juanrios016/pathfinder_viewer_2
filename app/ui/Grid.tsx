@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import arrow from "../../public/arrow.png";
+import { Instructions } from "./Instructions";
 
 export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -19,9 +20,32 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
 
   const [printingAlgoPath, setPrintingAlgoPath] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [buttonPressed, setButtonPressed] = useState<any>(false);
+  const [buttonPressed, setButtonPressed] = useState<boolean>(false);
   const [showArrows, setShowArrows] = useState<boolean>(false);
+  const [screenWidth, setScreenWidth] = useState<number>(0);
+  const [totalRows, setTotalRows] = useState<number>(0);
+  const [totalCol, setTotalCol] = useState<number>(0);
 
+  useEffect(() => {
+    // updates the nmber of rows and cells depending on the device screen size
+    const updateScreenWidth = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    // Initial screen width
+    updateScreenWidth();
+
+    // Event listener for screen size changes
+    window.addEventListener("resize", updateScreenWidth);
+
+    setTotalRows(Math.floor(window.innerWidth / 24));
+    setTotalCol(window.innerHeight * 1.5);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", updateScreenWidth);
+    };
+  }, []);
   const handleMouseDown = () => {
     // initializes function when mouse is pressed down
     setIsMouseDown(true);
@@ -211,7 +235,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   let rows = [];
   let j = 0; // rows
   let k = 0; // cols
-  for (let i = 1; i <= 1500; i++) {
+  for (let i = 1; i <= totalCol; i++) {
     rows.push(
       <div
         key={i}
@@ -254,7 +278,8 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
       </div>
     );
     k++;
-    if (i % 60 === 0) {
+
+    if (i % totalRows === 0) {
       individualCells.push(
         <div key={i} className="flex flex-wrap">
           {rows}
@@ -268,7 +293,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
 
   return (
     <div>
-      <div className="h-[60px] flex items-center justify-center">
+      <div className="min-h-[60px] flex items-center justify-center py-3">
         <button
           onClick={startAnimation}
           className={`btn px-5 m-3 ${!changedBoo ? "opacity-50" : ""}`}
@@ -294,11 +319,20 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
           </label>
         </div>
       </div>
-      <div className="h-[120px] flex items-center justify-center ">
+
+      <div className=" md:min-h-[120px] flex items-center justify-center ">
+        <div
+          className={`hidden xl:${
+            JSON.parse(algoInfo).info ? "hidden" : "block"
+          }`}
+        >
+          <Instructions />
+        </div>
+
         <p
           className={`${
             JSON.parse(algoInfo).info
-              ? "m-40 p-2 text-center border border-black"
+              ? "xl:mx-40 m-5 p-2 text-center border border-black"
               : "hidden"
           }`}
         >
@@ -315,9 +349,8 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
           </Link>
         </p>
       </div>
-
       <div
-        className="flex flex-wrap justify-center items-center"
+        className={`flex flex-col justify-center items-center`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
       >
