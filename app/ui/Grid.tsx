@@ -16,7 +16,12 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const [finalShortestPath, setFinalShortestPath] = useState<string[]>([]);
 
   const [arrowDir, setArrowDir] = useState<string[][]>([[], [], [], []]);
-  const [finalArrowDir, setFinalArrowDir] = useState<string[][]>([[], [], [], []]);
+  const [finalArrowDir, setFinalArrowDir] = useState<string[][]>([
+    [],
+    [],
+    [],
+    [],
+  ]);
 
   const [printingAlgoPath, setPrintingAlgoPath] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,7 +115,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
   const generateMaze = () => {
     // generates a random maze on the grid
     setWalls([]);
-    for (let i = 1; i <= 2100; i++) {
+    for (let i = 1; i <= totalCol; i++) {
       const iswall = Math.random();
       const currCell =
         document.querySelector(`[cell-key="${i}"]`)?.getAttribute("cell-pos") ||
@@ -321,11 +326,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
       </div>
 
       <div className=" md:min-h-[120px] flex items-center justify-center ">
-        <div
-          className={`hidden ${
-            JSON.parse(algoInfo).info ? "hidden" : "block"
-          }`}
-        >
+        <div className={`${JSON.parse(algoInfo).info ? "hidden" : "block"}`}>
           <Instructions />
         </div>
 

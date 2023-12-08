@@ -38,3 +38,6 @@
 .active {
   border: 2px dashed blue; /* Example border style for active drop zone */
 }
+.bold-text {
+  font-weight: bold;
+}
