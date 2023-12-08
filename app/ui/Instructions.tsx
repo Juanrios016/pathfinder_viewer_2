@@ -21,7 +21,7 @@ export const Instructions = () => {
           <span className="custom-number bold-text">3.</span> Add walls
           (obstacles) by simply holding down the left click and dragging your
           mouse around the grid. To unselect a wall, repeat the same process.
-          (NOTE: This feature might not work on touchscreen devives. Please
+          (NOTE: This feature might not work on touchscreen devices. Please
           generate a random maze.)
         </li>
         <li>
