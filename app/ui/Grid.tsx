@@ -43,7 +43,7 @@ export const Final = ({ selectedAlgo, changedBoo, algoInfo }: any) => {
     // Event listener for screen size changes
     window.addEventListener("resize", updateScreenWidth);
 
-    setTotalRows(Math.floor(window.innerWidth / 24));
+    setTotalRows(Math.floor(window.innerWidth / 24) - 1);
     setTotalCol(window.innerHeight * 1.5);
 
     // Cleanup the event listener on component unmount
